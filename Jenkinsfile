@@ -72,7 +72,7 @@ pipeline {
                     def warFile = 'WebAppCal-0.0.6.war'
                     sh """
                         # Download WAR file from Nexus
-                        wget http://54.152.176.206:8081/nexus/repository/Releases/com/web/cal/WebAppCal/0.0.6/${warFile} -O /tmp/${warFile}
+                        wget http://54.152.176.206:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/0.0.6/WebAppCal-0.0.6.war/${warFile} -O /tmp/${warFile}
                         
                         # Deploy the WAR file to Tomcat
                         sudo rm -rf ~/apache-tomcat*/webapps/*.war
