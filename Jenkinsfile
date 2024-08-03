@@ -17,7 +17,7 @@ pipeline {
                     sh 'ls -l /home/ubuntu/workspace/ci-cd' // List contents of the parent directory
                     sh 'ls -l /home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project' // List contents of the Jenkins-CI-CD-Project directory
                     
-                    dir('/home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project') {
+                    dir('/home/ubuntu/workspace/ci-cd') {
                         // Building the project using Maven
                         sh 'mvn clean package -Dmaven.compiler.source=1.8 -Dmaven.compiler.target=1.8'
                         sh 'ls -l target' // Listing contents of the target directory for verification
