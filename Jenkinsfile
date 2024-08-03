@@ -70,28 +70,26 @@ pipeline {
             steps {
                 script {
                     def warFile = 'WebAppCal-0.0.6.war'
+                    def nexusUrl = 'http://54.152.176.206:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/0.0.6/'
+                    def downloadPath = "/tmp/${warFile}"
+                    def tomcatWebappsDir = '~/apache-tomcat*/webapps/'
+                    def tomcatBinDir = '~/apache-tomcat*/bin/'
+
+                    // Download WAR file from Nexus
                     sh """
-                        # Download WAR file from Nexus
-                        wget http://54.152.176.206:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/0.0.6/WebAppCal-0.0.6.war/${warFile} -O /tmp/${warFile}
-                        
-                        # Deploy the WAR file to Tomcat
-                        sudo rm -rf ~/apache-tomcat*/webapps/*.war
-                        sudo mv /tmp/${warFile} ~/apache-tomcat*/webapps/
+                        wget ${nexusUrl}${warFile} -O ${downloadPath}
+                    """
+
+                    // Deploy the WAR file to Tomcat
+                    sh """
+                        sudo rm -rf ${tomcatWebappsDir}*.war
+                        sudo mv ${downloadPath} ${tomcatWebappsDir}
                         sudo systemctl daemon-reload
-                        sudo ~/apache-tomcat*/bin/shutdown.sh
-                        sudo ~/apache-tomcat*/bin/startup.sh
+                        sudo ${tomcatBinDir}shutdown.sh
+                        sudo ${tomcatBinDir}startup.sh
                     """
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            // Sending an email notification after the pipeline execution
-            emailext to: 'timothytoweh1@gmail.com',
-                      subject: "Jenkins Build ${currentBuild.fullDisplayName}",
-                      body: "Check console output at ${env.BUILD_URL} to view the results."
         }
     }
 }
