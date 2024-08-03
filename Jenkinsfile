@@ -32,9 +32,18 @@ pipeline {
         stage('Upload to Nexus') {
             steps {
                 script {
-                    nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: env.NEXUS_REPOSITORY, packages: [
-                        [$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: 'war', filePath: 'target/WebAppCal.war']], mavenCoordinate: [groupId: 'com.example', artifactId: 'WebAppCal', version: '1.0.0']]
-                    ], credentialsId: env.NEXUS_CREDENTIALS_ID
+                    nexusArtifactUploader(
+                        nexusVersion: env.NEXUS_VERSION,
+                        protocol: env.NEXUS_PROTOCOL,
+                        nexusUrl: env.NEXUS_URL,
+                        groupId: 'com.example',
+                        version: '1.0.0',
+                        repository: env.NEXUS_REPOSITORY,
+                        credentialsId: env.NEXUS_CREDENTIALS_ID,
+                        artifacts: [
+                            [artifactId: 'WebAppCal', classifier: '', file: 'target/WebAppCal.war', type: 'war']
+                        ]
+                    )
                 }
             }
         }
