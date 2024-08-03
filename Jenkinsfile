@@ -13,7 +13,11 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    dir('Jenkins-CI-CD-Project') {
+                    // Verify the directory structure
+                    sh 'ls -l /home/ubuntu/workspace/ci-cd' // List contents of the parent directory
+                    sh 'ls -l /home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project' // List contents of the Jenkins-CI-CD-Project directory
+                    
+                    dir('/home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project') {
                         // Building the project using Maven
                         sh 'mvn clean package -Dmaven.compiler.source=1.8 -Dmaven.compiler.target=1.8'
                         sh 'ls -l target' // Listing contents of the target directory for verification
@@ -25,7 +29,7 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    dir('Jenkins-CI-CD-Project') {
+                    dir('/home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project') {
                         // Running tests using Maven
                         sh 'mvn test'
                     }
@@ -36,7 +40,7 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    dir('Jenkins-CI-CD-Project') {
+                    dir('/home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project') {
                         def warFile = 'target/WebAppCal-0.0.6.war'
                         // Checking if the WAR file exists before attempting to upload
                         if (fileExists(warFile)) {
@@ -65,7 +69,6 @@ pipeline {
             agent { label 'deploy' }
             steps {
                 script {
-                    // Define deployment steps on the deploy node
                     def warFile = 'WebAppCal-0.0.6.war'
                     sh """
                         # Download WAR file from Nexus
