@@ -55,7 +55,7 @@ pipeline {
                             nexusUrl: 'http://54.152.176.206:8081/nexus',
                             nexusVersion: 'nexus2',
                             protocol: 'http',
-                            repository: 'Releases',
+                            repository: 'releases',
                             version: '0.0.6'
                         } else {
                             // Error if the WAR file is not found
