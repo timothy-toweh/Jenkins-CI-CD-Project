@@ -41,7 +41,7 @@ pipeline {
                         repository: env.NEXUS_REPOSITORY,
                         credentialsId: env.NEXUS_CREDENTIALS_ID,
                         artifacts: [
-                            [artifactId: 'WebAppCal', classifier: '', file: 'target/WebAppCal.war', type: 'war']
+                            [artifactId: 'WebAppCal', classifier: '', file: 'target/WebAppCal-0.0.6.war', type: 'war']
                         ]
                     )
                 }
