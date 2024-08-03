@@ -29,7 +29,7 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    dir('/home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project') {
+                    dir('/home/ubuntu/workspace/ci-cd') {
                         // Running tests using Maven
                         sh 'mvn test'
                     }
@@ -40,7 +40,7 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    dir('/home/ubuntu/workspace/ci-cd/Jenkins-CI-CD-Project') {
+                    dir('/home/ubuntu/workspace/ci-cd') {
                         def warFile = 'target/WebAppCal-0.0.6.war'
                         // Checking if the WAR file exists before attempting to upload
                         if (fileExists(warFile)) {
