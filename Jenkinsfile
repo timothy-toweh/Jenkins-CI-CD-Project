@@ -1,10 +1,11 @@
 pipeline {
-    agent any
+    agent none
 
     stages {
         stage('Checkout') {
+            agent { label 'build' }
             steps {
-                // Checking out the repository
+                // Checking out the repository directly on the build node
                 checkout scm
             }
         }
@@ -32,7 +33,7 @@ pipeline {
             }
         }
         stage('Upload to Nexus') {
-            agent { label 'deploy' }
+            agent { label 'build' }
             steps {
                 script {
                     dir('Jenkins-CI-CD-Project') {
@@ -63,23 +64,20 @@ pipeline {
         stage('Deploy') {
             agent { label 'deploy' }
             steps {
-                echo 'Deploying the application'
                 script {
-                    dir('Jenkins-CI-CD-Project') {
-                        unstash 'Jenkins-CI-CD-Project'
+                    // Define deployment steps on the deploy node
+                    def warFile = 'WebAppCal-0.0.6.war'
+                    sh """
+                        # Download WAR file from Nexus
+                        wget http://54.152.176.206:8081/nexus/repository/Releases/com/web/cal/WebAppCal/0.0.6/${warFile} -O /tmp/${warFile}
                         
-                        // Assuming the WAR file name and location
-                        def warFile = 'target/WebAppCal-0.0.6.war'
-                        
-                        // Deploy the WAR file to Tomcat
-                        sh """
-                            sudo rm -rf ~/apache-tomcat*/webapps/*.war
-                            sudo mv ${warFile} ~/apache-tomcat*/webapps/
-                            sudo systemctl daemon-reload
-                            sudo ~/apache-tomcat*/bin/shutdown.sh
-                            sudo ~/apache-tomcat*/bin/startup.sh
-                        """
-                    }
+                        # Deploy the WAR file to Tomcat
+                        sudo rm -rf ~/apache-tomcat*/webapps/*.war
+                        sudo mv /tmp/${warFile} ~/apache-tomcat*/webapps/
+                        sudo systemctl daemon-reload
+                        sudo ~/apache-tomcat*/bin/shutdown.sh
+                        sudo ~/apache-tomcat*/bin/startup.sh
+                    """
                 }
             }
         }
