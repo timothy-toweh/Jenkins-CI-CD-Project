@@ -52,7 +52,7 @@ pipeline {
                             ],
                             credentialsId: 'nexus-credentials',
                             groupId: 'com.web.cal',
-                            nexusUrl: 'http://54.152.176.206:8081/nexus',
+                            nexusUrl: '54.152.176.206:8081/nexus',
                             nexusVersion: 'nexus2',
                             protocol: 'http',
                             repository: 'Releases',
