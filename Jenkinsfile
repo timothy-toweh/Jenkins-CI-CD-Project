@@ -92,4 +92,16 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            mail to: 'timothytoweh1@gmail.com',
+                 subject: 'Jenkins CI-CD Successful',
+                 body: 'Jenkins CI-CD Job was successful, YAAAY'
+        }
+        failure {
+            mail to: 'timothytoweh1@gmail.com',
+                 subject: 'Jenkins CI-CD Failed',
+                 body: 'Jenkins CI-CD job failed, sorry'
+        }
+    }
 }
