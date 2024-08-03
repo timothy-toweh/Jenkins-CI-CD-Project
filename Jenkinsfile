@@ -7,13 +7,14 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "54.152.176.206:8081/nexus"
-        NEXUS_REPOSITORY = "maven-releases"
+        NEXUS_REPOSITORY = "Releases"
         NEXUS_CREDENTIALS_ID = "nexus-credentials" // Ensure this matches the ID from Jenkins credentials
     }
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/timothy-toweh/Jenkins-CI-CD-Project'
+                echo 'Checking out source code'
+                checkout scm
             }
         }
         stage('Build') {
