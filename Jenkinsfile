@@ -12,8 +12,8 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    // Use the correct directory name here
                     dir('Jenkins-CI-CD-Project') {
+                        // Building the project using Maven
                         sh 'mvn clean package -Dmaven.compiler.source=1.8 -Dmaven.compiler.target=1.8'
                         sh 'ls -l target' // Listing contents of the target directory for verification
                     }
@@ -24,8 +24,8 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    // Use the correct directory name here
                     dir('Jenkins-CI-CD-Project') {
+                        // Running tests using Maven
                         sh 'mvn test'
                     }
                 }
@@ -35,25 +35,27 @@ pipeline {
             agent { label 'deploy' }
             steps {
                 script {
-                    def warFile = 'Jenkins-CI-CD-Project/target/WebAppCal-0.0.6.war'
-                    // Checking if the WAR file exists before attempting to upload
-                    if (fileExists(warFile)) {
-                        nexusArtifactUploader artifacts: [
-                            [artifactId: 'WebAppCal',
-                             classifier: '',
-                             file: warFile,
-                             type: 'war']
-                        ],
-                        credentialsId: 'nexus-credentials',
-                        groupId: 'com.web.cal',
-                        nexusUrl: 'http://54.152.176.206:8081/nexus',
-                        nexusVersion: 'nexus2',
-                        protocol: 'http',
-                        repository: 'Releases',
-                        version: '0.0.6'
-                    } else {
-                        // Error if the WAR file is not found
-                        error "WAR file not found: ${warFile}"
+                    dir('Jenkins-CI-CD-Project') {
+                        def warFile = 'target/WebAppCal-0.0.6.war'
+                        // Checking if the WAR file exists before attempting to upload
+                        if (fileExists(warFile)) {
+                            nexusArtifactUploader artifacts: [
+                                [artifactId: 'WebAppCal',
+                                 classifier: '',
+                                 file: warFile,
+                                 type: 'war']
+                            ],
+                            credentialsId: 'nexus-credentials',
+                            groupId: 'com.web.cal',
+                            nexusUrl: 'http://54.152.176.206:8081/nexus',
+                            nexusVersion: 'nexus2',
+                            protocol: 'http',
+                            repository: 'Releases',
+                            version: '0.0.6'
+                        } else {
+                            // Error if the WAR file is not found
+                            error "WAR file not found: ${warFile}"
+                        }
                     }
                 }
             }
@@ -63,20 +65,21 @@ pipeline {
             steps {
                 echo 'Deploying the application'
                 script {
-                    // Unstash the previously stored artifacts
-                    unstash 'Jenkins-CI-CD-Project'
-                    
-                    // Assuming the WAR file name and location
-                    def warFile = 'Jenkins-CI-CD-Project/target/WebAppCal-0.0.6.war'
-                    
-                    // Deploy the WAR file to Tomcat
-                    sh """
-                        sudo rm -rf ~/apache-tomcat*/webapps/*.war
-                        sudo mv ${warFile} ~/apache-tomcat*/webapps/
-                        sudo systemctl daemon-reload
-                        sudo ~/apache-tomcat*/bin/shutdown.sh
-                        sudo ~/apache-tomcat*/bin/startup.sh
-                    """
+                    dir('Jenkins-CI-CD-Project') {
+                        unstash 'Jenkins-CI-CD-Project'
+                        
+                        // Assuming the WAR file name and location
+                        def warFile = 'target/WebAppCal-0.0.6.war'
+                        
+                        // Deploy the WAR file to Tomcat
+                        sh """
+                            sudo rm -rf ~/apache-tomcat*/webapps/*.war
+                            sudo mv ${warFile} ~/apache-tomcat*/webapps/
+                            sudo systemctl daemon-reload
+                            sudo ~/apache-tomcat*/bin/shutdown.sh
+                            sudo ~/apache-tomcat*/bin/startup.sh
+                        """
+                    }
                 }
             }
         }
