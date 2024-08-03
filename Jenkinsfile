@@ -11,23 +11,31 @@ pipeline {
         stage('Build') {
             agent { label 'build' }
             steps {
-                // Building the project using Maven
-                sh 'mvn clean package'
-                sh 'ls -l target' // Listing contents of the target directory for verification
+                script {
+                    // Use the correct directory name here
+                    dir('Jenkins-CI-CD-Project') {
+                        sh 'mvn clean package -Dmaven.compiler.source=1.8 -Dmaven.compiler.target=1.8'
+                        sh 'ls -l target' // Listing contents of the target directory for verification
+                    }
+                }
             }
         }
         stage('Test') {
             agent { label 'build' }
             steps {
-                // Running tests using Maven
-                sh 'mvn test'
+                script {
+                    // Use the correct directory name here
+                    dir('Jenkins-CI-CD-Project') {
+                        sh 'mvn test'
+                    }
+                }
             }
         }
         stage('Upload to Nexus') {
             agent { label 'deploy' }
             steps {
                 script {
-                    def warFile = 'target/WebAppCal-0.0.6.war'
+                    def warFile = 'Jenkins-CI-CD-Project/target/WebAppCal-0.0.6.war'
                     // Checking if the WAR file exists before attempting to upload
                     if (fileExists(warFile)) {
                         nexusArtifactUploader artifacts: [
@@ -36,12 +44,12 @@ pipeline {
                              file: warFile,
                              type: 'war']
                         ],
-                        credentialsId: 'your-credentials-id',
+                        credentialsId: 'nexus-credentials',
                         groupId: 'com.web.cal',
                         nexusUrl: 'http://54.152.176.206:8081/nexus',
                         nexusVersion: 'nexus2',
                         protocol: 'http',
-                        repository: 'your-repo',
+                        repository: 'Releases',
                         version: '0.0.6'
                     } else {
                         // Error if the WAR file is not found
@@ -50,12 +58,26 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Tomcat') {
+        stage('Deploy') {
             agent { label 'deploy' }
             steps {
-                // Placeholder for deployment steps
-                // Add your deployment commands here
-                echo "Deploying to Tomcat"
+                echo 'Deploying the application'
+                script {
+                    // Unstash the previously stored artifacts
+                    unstash 'Jenkins-CI-CD-Project'
+                    
+                    // Assuming the WAR file name and location
+                    def warFile = 'Jenkins-CI-CD-Project/target/WebAppCal-0.0.6.war'
+                    
+                    // Deploy the WAR file to Tomcat
+                    sh """
+                        sudo rm -rf ~/apache-tomcat*/webapps/*.war
+                        sudo mv ${warFile} ~/apache-tomcat*/webapps/
+                        sudo systemctl daemon-reload
+                        sudo ~/apache-tomcat*/bin/shutdown.sh
+                        sudo ~/apache-tomcat*/bin/startup.sh
+                    """
+                }
             }
         }
     }
