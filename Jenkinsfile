@@ -72,7 +72,7 @@ pipeline {
                 script {
                     def version = readMavenPom().getVersion()
                     def warFile = "WebAppCal-${version}.war"
-                    def nexusUrl = 'http://35.172.213.71:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/0.0.6/'
+                    def nexusUrl = "http://35.172.213.71:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/${version}/"
                     def downloadPath = "/tmp/${warFile}"
                     def tomcatWebappsDir = '~/apache-tomcat*/webapps/'
                     def tomcatBinDir = '~/apache-tomcat*/bin/'
