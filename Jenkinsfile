@@ -41,7 +41,8 @@ pipeline {
             steps {
                 script {
                     dir('/home/ubuntu/workspace/ci-cd') {
-                        def warFile = 'target/WebAppCal-0.0.6.war'
+                        def version = readMavenPom().getVersion()
+                        def warFile = "target/WebAppCal-${version}.war"
                         // Checking if the WAR file exists before attempting to upload
                         if (fileExists(warFile)) {
                             nexusArtifactUploader artifacts: [
@@ -56,7 +57,7 @@ pipeline {
                             nexusVersion: 'nexus2',
                             protocol: 'http',
                             repository: 'releases',
-                            version: '0.0.6'
+                            version: version
                         } else {
                             // Error if the WAR file is not found
                             error "WAR file not found: ${warFile}"
@@ -69,7 +70,8 @@ pipeline {
             agent { label 'deploy' }
             steps {
                 script {
-                    def warFile = 'WebAppCal-0.0.6.war'
+                    def version = readMavenPom().getVersion()
+                    def warFile = "WebAppCal-${version}.war"
                     def nexusUrl = 'http://35.172.213.71:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/0.0.6/'
                     def downloadPath = "/tmp/${warFile}"
                     def tomcatWebappsDir = '~/apache-tomcat*/webapps/'
