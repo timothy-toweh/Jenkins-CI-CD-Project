@@ -70,7 +70,7 @@ pipeline {
             steps {
                 script {
                     def warFile = 'WebAppCal-0.0.6.war'
-                    def nexusUrl = 'http://54.152.176.206:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/0.0.6/'
+                    def nexusUrl = 'http://35.172.213.71:8081/nexus/service/local/repositories/releases/content/com/web/cal/WebAppCal/0.0.6/'
                     def downloadPath = "/tmp/${warFile}"
                     def tomcatWebappsDir = '~/apache-tomcat*/webapps/'
                     def tomcatBinDir = '~/apache-tomcat*/bin/'
